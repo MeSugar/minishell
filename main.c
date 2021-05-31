@@ -4,4 +4,5 @@ int main()
     printf("%d", c);
     c++;
     printf("%d", c + 5);
+    printf("%d", c * 5);
 }
