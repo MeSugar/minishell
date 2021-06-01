@@ -1,11 +1,14 @@
+#include "shelly.h"
+
 int main()
 {
-    int c = 5;
-    printf("mic check mic check\n");
+    char *line;
+    int ret;
 
-    printf("%d", c);
-    c++;
-    printf("%d", c + 5);
-    printf("%d", c * 5);
+    line = 0;
 
+    ret = get_next_line(0, &line);
+    if (ret)
+        printf("%s\n", line);
+    return (0);
 }
