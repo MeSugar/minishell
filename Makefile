@@ -15,7 +15,7 @@ SRCS		=	main.c Utils/get_next_line.c Utils/get_next_line_utils.c
 all : $(NAME)
 
 $(NAME) : $(SRCS)
-		@$(CC) -o $(NAME) $(CFLAGS) $(SRCS) -I $(INCLUDES)
+		@$(CC) -g -o $(NAME) $(CFLAGS) $(SRCS) -I $(INCLUDES)
 
 clean :
 		@rm -rf Utils/*.o

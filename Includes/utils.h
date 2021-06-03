@@ -1,11 +1,13 @@
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#ifndef UTILS_H
+# define UTILS_H
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 2
+#  define BUFFER_SIZE 4096
 # endif
 # include <unistd.h>
 # include <stdlib.h>
+# include <fcntl.h>
 
+// GNL utils
 size_t	ft_strlen(const char *s);
 char	*ft_strdup(const char *s1);
 char	*ft_strjoin(const char *s1, const char *s2);
