@@ -7,6 +7,5 @@ void lexer(char *line, t_lex *lexer)
     token = ft_calloc(sizeof(t_token));
     lexer->toklist = token;
 
-    
 
 }
