@@ -6,21 +6,25 @@ CC			=	gcc
 
 INCLUDES	=	./Includes
 
-# LIBFT_PATH	=	./Libft
+LIBFT_PATH	=	./Libft
 
-# LIBFT		=	./Libft/libft.a
+LIBFT		=	./Libft/libft.a
 
-SRCS		=	main.c Utils/get_next_line.c Utils/get_next_line_utils.c
+SRCS		=	main.c Utils/get_next_line.c \
+				Lexer/lexer.c
 
 all : $(NAME)
 
 $(NAME) : $(SRCS)
-		@$(CC) -g -o $(NAME) $(CFLAGS) $(SRCS) -I $(INCLUDES)
+		@make bonus -C $(LIBFT_PATH)
+		@$(CC) -g -o $(NAME) $(CFLAGS) $(SRCS) -I $(INCLUDES) -I $(LIBFT_PATH) $(LIBFT)
 
 clean :
+		@make -C $(LIBFT_PATH) clean
 		@rm -rf Utils/*.o
 
 fclean : clean
+		@make -C $(LIBFT_PATH) fclean
 		@rm -rf $(NAME)
 
 re : fclean all

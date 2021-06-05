@@ -4,7 +4,7 @@
 typedef struct	s_token
 {
 	int type;
-	t_token *next;
+	struct s_token *next;
 }				t_token;
 
 
