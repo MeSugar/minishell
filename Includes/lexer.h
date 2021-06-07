@@ -1,19 +1,21 @@
 #ifndef LEXER_H
 # define LEXER_H
 
+// token types
+// # define CHAR 10
+// # define QUOTE 11
+// # define DQUOTE 12
+// # define PIPE 13
+// # define SEMICOLON 14
+// # define GREATER 15
+// # define LESSER 16
+
 typedef struct	s_token
 {
-	int type;
+	char *content;
 	struct s_token *next;
 }				t_token;
 
-
-typedef struct	s_lex
-{
-	int count;
-	t_token *toklist;
-}				t_lex;
-
-void lexer(char *line, t_lex *lexer);
+int lexer(char *line);
 
 #endif

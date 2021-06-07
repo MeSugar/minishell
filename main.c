@@ -6,11 +6,10 @@ int main()
 
     while (1)
     {
-        t_lex lex;
         line = 0;
         printf("selly> ");
         get_next_line(0, &line);
-        lexer(line, &lex);
+        lexer(line);
     }
     
     return (0);
