@@ -13,6 +13,8 @@ int comands_counter(char *line)
     comands = 1;
     quotes = 0;
     dquotes = 0;
+    if (line[0] == '|' || line[0] == ';')
+        return (-1);
     while (line[++i])
     {
         if (line[i] == '\'' && !quotes && !dquotes && line[i - 1] != '\\')
@@ -66,7 +68,7 @@ char *quote(char *line, int *i)
 			curr_str = malloc(sizeof(char) * ((*i) - frst_quote));
     		curr_str = ft_memcpy(curr_str, line + frst_quote + 1, (size_t)((*i) - frst_quote - 1));
 			break;
-        if (line[*i] == '\\' && (line[*i + 1] == '\\' || line[*i + 1] == '\''))
+        if (line[*i] == '\\' && (line[*i + 1] == '\\' || line[*i + 1] == '\'' || line[*i + 1] == '$'))
             line = backslash(line, i);
 		}
     }
@@ -96,7 +98,7 @@ char *dquote(char *line, int *i)
     		curr_str = ft_memcpy(curr_str, line + frst_quote + 1, (size_t)((*i) - frst_quote - 1));
 			break;
 		}
-        if (line[*i] == '\\' && (line[*i + 1] == '\"' || line[*i + 1] == '\\'))
+        if (line[*i] == '\\' && (line[*i + 1] == '\"' || line[*i + 1] == '\\' || line[*i + 1] == '$'))
             line = backslash(line, i);
             
     }
@@ -107,7 +109,40 @@ char *dquote(char *line, int *i)
     return (output);
 }
 
-int lexer(char *line)
+char *env(char *line, int *i, char **envp)
+{
+    int start;
+    int j;
+    char *prev_str;
+	char *key;
+	// char *next_str;
+	char *output;
+
+    start = *i;
+    if (line[start + 1] != '_' && !ft_isalnum(line[start + 1]))
+        return (line);
+    prev_str = malloc(sizeof(char) * (*i));
+    prev_str = ft_memcpy(prev_str, line, (size_t)(*i));
+    while (line[++(*i)])
+    {
+        if (line[*i] != '_' && !ft_isalnum(line[*i]))
+        {
+            key = malloc(sizeof(char) * ((*i) - start));
+    		key = ft_memcpy(key, line + start + 1, (size_t)((*i) - start - 1));
+			break;
+        }
+    }
+    j = -1;
+    // while (envp[++j] && )
+	output = ft_strjoin(prev_str, key);
+    printf("env: %s\n", output);
+	// next_str = ft_strdup(line + *i + 1);
+	// output = ft_strjoin(output, next_str);
+	free(line);
+    return (output);
+}
+
+int lexer(char *line, char **envp)
 {
     int i;
     int ncomands;
@@ -123,6 +158,8 @@ int lexer(char *line)
             line = dquote(line, &i);
         if (line[i] == '\\')
             line = backslash(line, &i);
+        if (line[i] == '$')
+            line = env(line, &i, envp);
         // printf("line: %s\n", line);
     }
 	printf("%s\n", line);
