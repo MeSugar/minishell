@@ -41,7 +41,7 @@ char *backslash(char *line, int *i)
 	char *next_str;
 	char *output;
 
-    prev_str = malloc(sizeof(char) * (*i));
+    prev_str = malloc(sizeof(char) * (*i + 1));
     prev_str = ft_memcpy(prev_str, line, (size_t)(*i));
 	next_str = ft_strdup(line + *i + 1);
 	output = ft_strjoin(prev_str, next_str);
@@ -59,7 +59,7 @@ char *quote(char *line, int *i)
 	char *output;
 
 	frst_quote = *i;
-    prev_str = malloc(sizeof(char) * (*i));
+    prev_str = malloc(sizeof(char) * (*i + 1));
     prev_str = ft_memcpy(prev_str, line, (size_t)(*i));
     while (line[++(*i)])
     {
@@ -88,7 +88,7 @@ char *dquote(char *line, int *i)
 	char *output;
 
 	frst_quote = *i;
-    prev_str = malloc(sizeof(char) * (*i));
+    prev_str = malloc(sizeof(char) * (*i + 1));
     prev_str = ft_memcpy(prev_str, line, (size_t)(*i));
     while (line[++(*i)])
     {
@@ -113,6 +113,7 @@ char *env(char *line, int *i, char **envp)
 {
     int start;
     int j;
+    int key_len;
     char *prev_str;
 	char *key;
 	// char *next_str;
@@ -121,7 +122,7 @@ char *env(char *line, int *i, char **envp)
     start = *i;
     if (line[start + 1] != '_' && !ft_isalnum(line[start + 1]))
         return (line);
-    prev_str = malloc(sizeof(char) * (*i));
+    prev_str = malloc(sizeof(char) * (*i + 1));
     prev_str = ft_memcpy(prev_str, line, (size_t)(*i));
     while (line[++(*i)])
     {
@@ -133,9 +134,19 @@ char *env(char *line, int *i, char **envp)
         }
     }
     j = -1;
-    // while (envp[++j] && )
+    key_len = ft_strlen(key);
+    while (envp[++j])
+    {
+        if (!ft_strncmp(key, envp[j], key_len) && envp[j][key_len + 1] == '=')
+        {
+            key = 
+
+            break;
+        }
+    }
+    // printf("%s\n", envp[start]);
 	output = ft_strjoin(prev_str, key);
-    printf("env: %s\n", output);
+    // printf("env: %s\n", output);
 	// next_str = ft_strdup(line + *i + 1);
 	// output = ft_strjoin(output, next_str);
 	free(line);

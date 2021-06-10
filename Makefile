@@ -17,7 +17,7 @@ all : $(NAME)
 
 $(NAME) : $(SRCS)
 		@make bonus -C $(LIBFT_PATH)
-		@$(CC) -g -o $(NAME) $(CFLAGS) $(SRCS) -I $(INCLUDES) -I $(LIBFT_PATH) $(LIBFT)
+		@$(CC) -g -o $(NAME) $(CFLAGS) $(SRCS) -I $(INCLUDES) -I $(LIBFT_PATH) $(LIBFT) -lreadline
 
 clean :
 		@make -C $(LIBFT_PATH) clean
