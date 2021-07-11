@@ -7,6 +7,5 @@
 // 	struct s_token *next;
 // }				t_token;
 
-int lexer(char *line, char **envp);
 
 #endif

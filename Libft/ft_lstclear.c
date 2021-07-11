@@ -14,8 +14,8 @@
 
 void	ft_lstclear(t_list **lst, void (*del)(void*))
 {
-	t_list *list_to_free;
-	t_list *tmp;
+	t_list	*list_to_free;
+	t_list	*tmp;
 
 	if (!del || !lst)
 		return ;

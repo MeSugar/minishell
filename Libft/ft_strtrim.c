@@ -26,11 +26,12 @@ char	*ft_strtrim(char const *s1, char const *set)
 		i++;
 	if (i == ft_strlen(s1))
 		return (ft_calloc(1, 1));
-	left = (char*)&s1[i];
+	left = (char *)&s1[i];
 	len = ft_strlen(left);
 	while (s1[len + i - 1] && ft_strchr(set, s1[len + i - 1]))
 		len--;
-	if (!(s2 = malloc(sizeof(char) * (len + 1))))
+	s2 = malloc(sizeof(char) * (len + 1));
+	if (!s2)
 		return (0);
 	ft_strlcpy(s2, left, (len + 1));
 	s2[len] = '\0';

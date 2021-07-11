@@ -10,8 +10,8 @@ LIBFT_PATH	=	./Libft
 
 LIBFT		=	./Libft/libft.a
 
-SRCS		=	main.c Utils/get_next_line.c \
-				Lexer/lexer.c
+SRCS		=	main.c Utils/get_next_line.c Utils/print_error.c Utils/skip_whitespaces.c \
+				Lexer/lexer.c 
 
 all : $(NAME)
 

@@ -62,7 +62,7 @@ static void	*cleaner(char **arr, int words)
 	return (0);
 }
 
-char		**ft_split(char const *s, char c)
+char	**ft_split(char const *s, char c)
 {
 	char	**arr;
 	int		i;
@@ -70,7 +70,8 @@ char		**ft_split(char const *s, char c)
 
 	if (!s)
 		return (0);
-	if (!(arr = (char**)malloc(sizeof(char*) * (word_counter(s, c) + 1))))
+	arr = (char **)malloc(sizeof(char *) * (word_counter(s, c) + 1));
+	if (!arr)
 		return (0);
 	i = 0;
 	clmn = 0;

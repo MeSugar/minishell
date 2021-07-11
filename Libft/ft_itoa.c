@@ -47,7 +47,7 @@ static char	*negative(char *str, long int n, int length)
 	return (str);
 }
 
-char		*ft_itoa(int n)
+char	*ft_itoa(int n)
 {
 	char		*s;
 	long int	nbr;
@@ -55,7 +55,8 @@ char		*ft_itoa(int n)
 
 	nbr = n;
 	len = ft_size(nbr);
-	if (!(s = malloc(sizeof(char) * (len + 1))))
+	s = malloc(sizeof(char) * (len + 1));
+	if (!s)
 		return (0);
 	if (nbr < 0)
 		return (negative(s, nbr, len));

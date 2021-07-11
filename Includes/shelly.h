@@ -12,8 +12,31 @@
 # include "libft.h"
 # include "lexer.h"
 
+typedef struct s_comand_list
+{
+	
+    char    **command;
+    int     redirect;
+	char	*file_name;
+	struct	s_comand_list *next;
+}   t_comand_list;
 
+typedef struct s_info
+{
+    t_comand_list	*head;
+    t_comand_list	*tail;
+    int				elements;
+}   t_info;
+
+
+
+//Utils
 int			get_next_line(int fd, char **line);
+int			print_error(char *msg, t_info *info);
+int			skip_whitespaces(int i, char *line);
+
+//Parsing
+int			lexer(char *line, char **envp, t_info *info);
 
 
 #endif
