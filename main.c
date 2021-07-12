@@ -10,6 +10,9 @@ t_info	*init_struct(void)
 	info->head = 0;
 	info->tail = 0;
 	info->elements = 0;
+	info->quoted_lines = 0;
+	info->quoted = 0;
+	info->added_quoted_lines = -1;
 	return (info);
 }
 
@@ -29,7 +32,7 @@ int main(int ac, char **av, char **envp)
         // printf("selly> ");
         // get_next_line(0, &line);
         line = readline("selly> ");
-        lexer(line, envp, info);
+        parser(line, envp, info);
     }
     (void)av;
     

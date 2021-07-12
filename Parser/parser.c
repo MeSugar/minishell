@@ -11,17 +11,23 @@ static int	line_check(char *line, t_info *info)
     i = -1;
     quotes = 0;
     dquotes = 0;
-    if (line[0] == '|' || line[0] == ';' || line[0] == '\\')
+    if (!ft_isalpha(line[0]) && line[0] != '<' && line[0] != '>')
 		return (print_error("Wrong syntax\n", info));
 	info->elements++;
     while (line[++i])
     {
         if (line[i] == '\'' && !quotes && !dquotes)
-            quotes = 1;
+		{
+			quotes = 1;
+			info->quoted_lines++;
+		}
         else if (line[i] == '\'' && quotes && !dquotes)
             quotes = 0;
         else if (line[i] == '\"' && !dquotes && !quotes)
-            dquotes = 1;
+		{
+			dquotes = 1;
+			info->quoted_lines++;
+		}
         else if (line[i] == '\"' && dquotes && !quotes)
             dquotes = 0;
         else if ((line[i] == '|' || line[i] == '>' || line[i] == '<') && !quotes && !dquotes)
@@ -33,6 +39,24 @@ static int	line_check(char *line, t_info *info)
     // printf("elements: %d\n", info->elements);
 	return (0);
 }
+
+char	**check_tabs(char **line)
+{
+	int i;
+	int j;
+
+	i = -1;
+	j = -1;
+	while (line[++i])
+	{
+		j = -1;
+		while (line[i][++j])
+			if (line[i][j] == '\a')
+				line[i][j] = ' ';
+	}
+	return (line);
+}
+
 
 // char *backslash(char *line, int *i)
 // {
@@ -86,8 +110,8 @@ char *envi(char *line, int *i, char **envp)
             break ;
         }
     }
-	if (!curr_str)
-		return (line);
+	if (!curr_str && !envp[j])
+		return (ft_strjoin(prev_str, next_str));
 	output = ft_strjoin(prev_str, curr_str);
 	output = ft_strjoin(output, next_str);
     return (output);
@@ -95,11 +119,11 @@ char *envi(char *line, int *i, char **envp)
 
 char *quote(char *line, int *i)
 {
-	int frst_quote;
-    char *prev_str;
-	char *curr_str;
-	char *next_str;
-	char *output;
+	int		frst_quote;
+    char	*prev_str;
+	char	*curr_str;
+	char	*next_str;
+	char	*output;
 
 	frst_quote = *i;
     prev_str = malloc(sizeof(char) * (*i + 1));
@@ -135,14 +159,16 @@ char *dquote(char *line, int *i, char **envp)
     prev_str = ft_memcpy(prev_str, line, (size_t)(*i));
     while (line[++(*i)])
     {
+		if (line[*i] == '$')
+			line = envi(line, i, envp);
+		// if (line[*i] == ' ')
+		// 	line[*i] = '\a';
         if (line[*i] == '\"')
 		{
 			curr_str = malloc(sizeof(char) * ((*i) - frst_quote));
     		curr_str = ft_memcpy(curr_str, line + frst_quote + 1, (size_t)((*i) - frst_quote - 1));
 			break;
 		}
-		if (line[*i] == '$')
-			line = envi(line, i, envp);
         // if (line[*i] == '\\' && (line[*i + 1] == '\"' || line[*i + 1] == '\\' || line[*i + 1] == '$'))
         //     line = backslash(line, i);
             
@@ -154,9 +180,10 @@ char *dquote(char *line, int *i, char **envp)
     return (output);
 }
 
-int lexer(char *line, char **envp, t_info *info)
+int parser(char *line, char **envp, t_info *info)
 {
     int i;
+    // char **arr;
 
     if (line_check(line, info))
 		return (1);
@@ -173,9 +200,21 @@ int lexer(char *line, char **envp, t_info *info)
         //     line = backslash(line, &i);
         if (line[i] == '$')
             line = envi(line, &i, envp);
+		// if (line[i] == ' ')
+		// 	line = whitespace(line, &i, info);
+		// if 
         // printf("line: %s\n", line);
     }
+	// if (ft_strchr(line, '|'))
+	// 	arr = split_by_pipe(line);
+    printf("line: %s\n", line);
+	// new_line = ft_split_modified(line);
+	// new_line = check_tabs(new_line);
 	// envp[0] = 0;
-	printf("%s\n", line);
+	//
+	// int j = -1;
+	// while (new_line[++j])
+	// 	printf("%s\n", new_line[j]);
+	//
 	return (0);
 }
