@@ -11,7 +11,7 @@ static int	line_check(char *line, t_info *info)
     i = -1;
     quotes = 0;
     dquotes = 0;
-    if (!ft_isalpha(line[0]) && line[0] != '<' && line[0] != '>')
+    if (!ft_isalpha(line[0]) && line[0] != '<' && line[0] != '>' && line[0] != '\"' && line[0] != '\'')
 		return (print_error("Wrong syntax\n", info));
 	info->elements++;
     while (line[++i])
@@ -142,6 +142,7 @@ char *quote(char *line, int *i)
 	output = ft_strjoin(prev_str, curr_str);
 	next_str = ft_strdup(line + *i + 1);
 	output = ft_strjoin(output, next_str);
+	*i = (*i) - 2;
 	free(line);
     return (output);
 }
@@ -176,8 +177,98 @@ char *dquote(char *line, int *i, char **envp)
 	output = ft_strjoin(prev_str, curr_str);
 	next_str = ft_strdup(line + *i + 1);
 	output = ft_strjoin(output, next_str);
+	// printf("char is %c\n", output[5]);
+	*i = (*i) - 1;
 	free(line);
     return (output);
+}
+
+int	check_last_arg(char **output, char **envp, t_info *info)
+{
+	int i;
+
+	i = -1;
+	if (!(*output))
+		return (0);
+	while ((*output)[++i])
+	{
+		if ((*output)[i] == '|' || (*output)[i] == '<' || (*output)[i] == '>')
+		{
+			// *prev_str = malloc(sizeof(char) * (i + 1));
+			// if (!prev_str)
+			// {
+			// 	print_error(strerror(errno), info);
+			// 	return (-1);
+			// }
+    		// *prev_str = ft_memcpy(*prev_str, *output, (size_t)(i));
+			// *output = ft_strdup((*output) + i + 1);
+			// info->tail->lines++;
+			// return (1);
+			break ;
+		}
+		if ((*output)[i] == '\'')
+			*output = quote(*output, &i);
+		if ((*output)[i] == '\"')
+			*output = dquote(*output, &i, envp);
+		if ((*output)[i] == '$')
+			*output = envi(*output, &i, envp);
+		// printf("number %d\n", i);
+		// printf("char is %c\n", (*output)[4]);
+		// printf("char is %c\n", (*output)[5]);
+		// printf("char is %c\n", (*output)[6]);
+		// printf("str is %s\n", (*output));
+		if ((*output)[i] == ' ' || (*output)[i] == '\t')
+			return (0);
+	}
+	info->tail->lines++;
+	return (1);
+}
+
+char *space(char *line, int *i, t_info *info, char **envp)
+{
+	char *output;
+	char *prev_str;
+
+	// printf("before removing space: %s\n", line);
+	prev_str = malloc(sizeof(char) * (*i + 1));
+	if (!prev_str)
+	{
+		print_error(strerror(errno), info);
+		return (0);
+	}
+	if (line[(*i) - 1])
+    	prev_str = ft_memcpy(prev_str, line, (size_t)(*i));
+	// printf("to add: %s\n", prev_str);
+	if (!info->tail)
+		add_element(init_element(info), info);
+	info->tail->lines++;
+	// printf("afte init: hello\n");
+	info->tail->command = add_line_to_arr(prev_str, info->tail, info);
+	ft_skip_whitespaces(i, line);
+	// printf("after skipping space: %s\n", line + (*i));
+	output = ft_strdup(line + *i);
+	*i = -1;
+    printf("out: %s\n", output);
+	if (check_last_arg(&output, envp, info))
+	{
+		info->tail->command = add_line_to_arr(output, info->tail, info);
+	}
+	//
+	int j;
+	t_command_list *tmp = info->head;
+	while (tmp)
+	{
+		j = 0;
+		while (tmp->command[j])
+		{
+			printf("%s\n", tmp->command[j]);
+			j++;
+		}
+		tmp = tmp->next;
+	}
+	if (!output)
+		return (0);
+	return (output);
 }
 
 int parser(char *line, char **envp, t_info *info)
@@ -200,8 +291,8 @@ int parser(char *line, char **envp, t_info *info)
         //     line = backslash(line, &i);
         if (line[i] == '$')
             line = envi(line, &i, envp);
-		// if (line[i] == ' ')
-		// 	line = whitespace(line, &i, info);
+		if (line[i] == ' ' || line[i] == '\t')
+			line = space(line, &i, info, envp);
 		// if 
         // printf("line: %s\n", line);
     }

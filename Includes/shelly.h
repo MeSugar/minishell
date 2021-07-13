@@ -24,6 +24,7 @@ typedef struct s_command_list
 {
 	int		type;
     char    **command;
+	int		lines;
     int     redirect;
 	char	*file_name;
 	struct	s_command_list *next;
@@ -51,5 +52,7 @@ char	    	**ft_split_modified(char const *s);
 int				parser(char *line, char **envp, t_info *info);
 t_command_list	*init_element(t_info *info);
 void			add_element(t_command_list *element, t_info *info);
+char			**add_line_to_arr(char *line, t_command_list *command, t_info *info);
+
 
 #endif
