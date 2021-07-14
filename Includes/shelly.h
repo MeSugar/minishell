@@ -14,11 +14,11 @@
 # include "lexer.h"
 
 # define COMMAND 111;
-# define RED_IN 112;
-# define DRED_IN 113;
-# define RED_OUT 114;
-# define DRED_OUT 115;
-# define BUILT_IN 116;
+# define BUILT_IN 112;
+# define RED_IN 113;
+# define DRED_IN 114;
+# define RED_OUT 115;
+# define DRED_OUT 116;
 
 typedef struct s_command_list
 {
@@ -35,9 +35,6 @@ typedef struct s_info
     t_command_list	*head;
     t_command_list	*tail;
     int				elements;
-    int				quoted_lines;
-	int				added_quoted_lines;
-	char			**quoted;
 }   t_info;
 
 
@@ -49,7 +46,8 @@ int				skip_whitespaces(int i, char *line);
 char	    	**ft_split_modified(char const *s);
 
 //Parsing
-int				parser(char *line, char **envp, t_info *info);
+t_info          *init_struct(void);
+t_info *parser(char *line, char **envp);
 t_command_list	*init_element(t_info *info);
 void			add_element(t_command_list *element, t_info *info);
 char			**add_line_to_arr(char *line, t_command_list *cmd, t_info *info);

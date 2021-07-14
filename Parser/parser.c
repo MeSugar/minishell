@@ -19,14 +19,14 @@ static int	line_check(char *line, t_info *info)
         if (line[i] == '\'' && !quotes && !dquotes)
 		{
 			quotes = 1;
-			info->quoted_lines++;
+			// info->quoted_lines++;
 		}
         else if (line[i] == '\'' && quotes && !dquotes)
             quotes = 0;
         else if (line[i] == '\"' && !dquotes && !quotes)
 		{
 			dquotes = 1;
-			info->quoted_lines++;
+			// info->quoted_lines++;
 		}
         else if (line[i] == '\"' && dquotes && !quotes)
             dquotes = 0;
@@ -265,13 +265,15 @@ char *treat_space(char *line, int *i, char **envp, t_info *info)
 	return (output);
 }
 
-int parser(char *line, char **envp, t_info *info)
+t_info *parser(char *line, char **envp)
 {
+	t_info *info;
+	info = init_struct();
     int i;
     // char **arr;
 
     if (line_check(line, info))
-		return (1);
+		return (0);
     // if ((ncomands = comands_counter(line)) == -1)
 		// print_error("Wrong syntax\n", info);
     i = -1;
@@ -320,5 +322,5 @@ int parser(char *line, char **envp, t_info *info)
 	// while (new_line[++j])
 	// 	printf("%s\n", new_line[j]);
 	//
-	return (0);
+	return (info);
 }
