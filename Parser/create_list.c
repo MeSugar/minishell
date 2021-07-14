@@ -33,63 +33,30 @@ void	add_element(t_command_list *element, t_info *info)
 	}
 }
 
-char **add_line_to_arr(char *line, t_command_list *command, t_info *info)
+char **add_line_to_arr(char *line, t_command_list *cmd, t_info *info)
 {
 	char	**arr;
-	// int		i;
+	int		j;
 
-	arr = malloc(sizeof(char *) * (command->lines + 1));
+	arr = malloc(sizeof(char *) * (cmd->lines + 1));
 	if (!arr)
 	{
 		print_error(strerror(errno), info);
 		return (0);
 	}
-	int j;
 	j = -1;
-	if (command->command)
+	if(cmd->command)
 	{
-		printf("---\n");
-		while (command->command[++j])
+		while (cmd->command[++j])
 		{
-			printf("%s\n", command->command[j]);
+			arr[j] = malloc(sizeof(char) * (ft_strlen(cmd->command[j]) + 1));
+			arr[j] = ft_memcpy(arr[j], cmd->command[j], ft_strlen(cmd->command[j]));
+			free(cmd->command[j]);
 		}
-		printf("---\n");
+		free(cmd->command);
 	}
-	if (command->command)
-	{
-		int z = -1;
-		while (command->command[++z])
-			printf("zzz %s\n", command->command[z]);
-		arr = command->command;
-	}
-	arr[command->lines - 1] = line;
-	if (info->head->lines == 4)
-	{	
-		printf("arr %s\n", arr[0]);
-		printf("arr %s\n", arr[1]);
-		printf("arr %s\n", arr[2]);
-	}
-	printf("arr %s\n", arr[command->lines - 1]);
-	printf("last line %d\n", command->lines);
-	arr[command->lines] = 0;
-	if (command->lines == 4)
-	{
-		while(*arr)
-		{
-
-			printf("arsa %s\n", *arr);
-			arr++;
-		}
-	}
-	// i = -1;
-	// if (command->command)
-	// {
-	// 	while (command->command[++i])
-	// 		free(command->command[i]);
-	// 	free(command->command);
-	// }
-	int f = -1;
-	while (arr[++f])
-		printf("sss %s\n", arr[f]);
+	arr[cmd->lines - 1] = malloc(sizeof(char) * (ft_strlen(line) + 1));
+	arr[cmd->lines - 1] = ft_memcpy(arr[cmd->lines - 1], line, ft_strlen(line));
+	arr[cmd->lines] = 0;
 	return (arr);
 }

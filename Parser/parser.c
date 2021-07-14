@@ -73,7 +73,7 @@ char	**check_tabs(char **line)
 //     return (output);
 // }
 
-char *envi(char *line, int *i, char **envp)
+char *treat_env(char *line, int *i, char **envp)
 {
     int start;
     int j;
@@ -117,7 +117,7 @@ char *envi(char *line, int *i, char **envp)
     return (output);
 }
 
-char *quote(char *line, int *i)
+char *treat_quote(char *line, int *i)
 {
 	int		frst_quote;
     char	*prev_str;
@@ -147,7 +147,7 @@ char *quote(char *line, int *i)
     return (output);
 }
 
-char *dquote(char *line, int *i, char **envp)
+char *treat_dquote(char *line, int *i, char **envp, t_info *info)
 {
 	int frst_quote;
     char *prev_str;
@@ -161,7 +161,7 @@ char *dquote(char *line, int *i, char **envp)
     while (line[++(*i)])
     {
 		if (line[*i] == '$')
-			line = envi(line, i, envp);
+			line = treat_env(line, i, envp);
 		// if (line[*i] == ' ')
 		// 	line[*i] = '\a';
         if (line[*i] == '\"')
@@ -175,56 +175,61 @@ char *dquote(char *line, int *i, char **envp)
             
     }
 	output = ft_strjoin(prev_str, curr_str);
+	if (!output)
+		print_error(strerror(errno), info);
 	next_str = ft_strdup(line + *i + 1);
+	if (!next_str)
+		print_error(strerror(errno), info);
 	output = ft_strjoin(output, next_str);
+	if (!output)
+		print_error(strerror(errno), info);
 	// printf("char is %c\n", output[5]);
 	*i = (*i) - 1;
 	free(line);
     return (output);
 }
 
-int	check_last_arg(char **output, char **envp, t_info *info)
+char	*treat_pipe(char *line, int *i, t_info *info)
 {
-	int i;
+	char	*output;
 
-	i = -1;
+	if (line[*i] == '|')
+		*i = (*i) + 1;
+	ft_skip_whitespaces(i, line);
+	output = ft_strdup(line + *i);
+	add_element(init_element(info), info);
+	free(line);
+	return (output);
+}
+
+int	check_last_arg(char **output, char **envp, int *i, t_info *info)
+{
 	if (!(*output))
 		return (0);
-	while ((*output)[++i])
+	while ((*output)[++(*i)])
 	{
-		if ((*output)[i] == '|' || (*output)[i] == '<' || (*output)[i] == '>')
+		if ((*output)[*i] == '|' || (*output)[*i] == '<' || (*output)[*i] == '>')
 		{
-			// *prev_str = malloc(sizeof(char) * (i + 1));
-			// if (!prev_str)
-			// {
-			// 	print_error(strerror(errno), info);
-			// 	return (-1);
-			// }
-    		// *prev_str = ft_memcpy(*prev_str, *output, (size_t)(i));
-			// *output = ft_strdup((*output) + i + 1);
-			// info->tail->lines++;
-			// return (1);
-			break ;
+			*output = treat_pipe(*output, i, info);
+			// break ;
 		}
-		if ((*output)[i] == '\'')
-			*output = quote(*output, &i);
-		if ((*output)[i] == '\"')
-			*output = dquote(*output, &i, envp);
-		if ((*output)[i] == '$')
-			*output = envi(*output, &i, envp);
-		// printf("number %d\n", i);
-		// printf("char is %c\n", (*output)[4]);
-		// printf("char is %c\n", (*output)[5]);
-		// printf("char is %c\n", (*output)[6]);
-		// printf("str is %s\n", (*output));
-		if ((*output)[i] == ' ' || (*output)[i] == '\t')
+		if ((*output)[*i] == '\'')
+			*output = treat_quote(*output, i);
+		if ((*output)[*i] == '\"')
+			*output = treat_dquote(*output, i, envp, info);
+		if ((*output)[*i] == '$')
+			*output = treat_env(*output, i, envp);
+		if ((*output)[*i] == ' ' || (*output)[*i] == '\t')
+		{
+			(*i) = (*i) - 1;
 			return (0);
+		}	
 	}
 	info->tail->lines++;
 	return (1);
 }
 
-char *space(char *line, int *i, t_info *info, char **envp)
+char *treat_space(char *line, int *i, char **envp, t_info *info)
 {
 	char *output;
 	char *prev_str;
@@ -248,24 +253,13 @@ char *space(char *line, int *i, t_info *info, char **envp)
 	// printf("after skipping space: %s\n", line + (*i));
 	output = ft_strdup(line + *i);
 	*i = -1;
-    printf("out: %s\n", output);
-	if (check_last_arg(&output, envp, info))
+    // printf("out: %s\n", output);
+	if (check_last_arg(&output, envp, i, info))
 	{
 		info->tail->command = add_line_to_arr(output, info->tail, info);
 	}
 	//
-	int j;
-	t_command_list *tmp = info->head;
-	while (tmp)
-	{
-		j = 0;
-		while (tmp->command[j])
-		{
-			printf("%s\n", tmp->command[j]);
-			j++;
-		}
-		tmp = tmp->next;
-	}
+	
 	if (!output)
 		return (0);
 	return (output);
@@ -284,21 +278,40 @@ int parser(char *line, char **envp, t_info *info)
     while(line[++i])
     {
         if (line[i] == '\'')
-            line = quote(line, &i);
+            line = treat_quote(line, &i);
         if (line[i] == '\"')
-            line = dquote(line, &i, envp);
+            line = treat_dquote(line, &i, envp, info);
         // if (line[i] == '\\')
         //     line = backslash(line, &i);
         if (line[i] == '$')
-            line = envi(line, &i, envp);
+            line = treat_env(line, &i, envp);
 		if (line[i] == ' ' || line[i] == '\t')
-			line = space(line, &i, info, envp);
+			line = treat_space(line, &i, envp, info);
+		if (line[i] =='|')
+			line = treat_pipe(line, &i, info);
+
 		// if 
         // printf("line: %s\n", line);
     }
 	// if (ft_strchr(line, '|'))
 	// 	arr = split_by_pipe(line);
-    printf("line: %s\n", line);
+	int j;
+	int f;
+
+	f = 0;
+	t_command_list *tmp = info->head;
+	while (tmp)
+	{
+		printf("node: %d\n", ++f);
+		j = 0;
+		while (tmp->command[j])
+		{
+			printf("%s\n", tmp->command[j]);
+			j++;
+		}
+		tmp = tmp->next;
+	}
+    // printf("line: %s\n", line);
 	// new_line = ft_split_modified(line);
 	// new_line = check_tabs(new_line);
 	// envp[0] = 0;
