@@ -1,32 +1,68 @@
-NAME		=	shelly
+SRCS = minishell.c\
+	srcs/parser/create_list.c\
+	srcs/parser/init.c\
+	srcs/parser/parser.c\
+	srcs/parser/line_checks.c\
+	srcs/parser/treat_env.c\
+	srcs/parser/treat_quote.c\
+	srcs/parser/treat_dquote.c\
+	srcs/parser/treat_pipe.c\
+	srcs/parser/treat_redirect.c\
+	srcs/parser/treat_space.c\
+	srcs/builtins/ft_echo.c\
+	srcs/builtins/ft_cd.c\
+	srcs/builtins/ft_pwd.c\
+	srcs/builtins/ft_export.c\
+	srcs/builtins/ft_unset.c\
+	srcs/builtins/ft_env.c\
+	srcs/builtins/ft_exit.c\
+	srcs/utils/print_error.c\
+	srcs/utils/backward_skip_whitespaces.c\
+	srcs/utils/ft_export_utils_for_print.c\
+	srcs/utils/ft_export_utils_for_add.c\
+	srcs/utils/treat_env_utils.c\
+	srcs/redirects/redirects.c\
+	srcs/free/free_and_exit.c\
+	srcs/tools/redirect_tools.c\
+	srcs/tools/is_tools.c\
+	srcs/tools/term_tools.c\
+	srcs/tools/cmd_tools.c\
+	srcs/tools/fd_tools.c\
+	srcs/signals/signal_handlers.c\
+	srcs/env/env_handlers.c\
+	srcs/exec/exec.c\
 
-CFLAGS		=	-Wall -Wextra -Werror
+OBJS = $(patsubst %.c,%.o,$(SRCS))
 
-CC			=	gcc
+HEADER = ./includes/*
 
-INCLUDES	=	./Includes
+NAME = minishell
 
-LIBFT_PATH	=	./Libft
+USER = /Users/gdelta/.brew
 
-LIBFT		=	./Libft/libft.a
+INC = -Iincludes -Ilibft -I $(USER)/Cellar/readline/8.1/include
 
-SRCS		=	main.c Utils/get_next_line.c Utils/print_error.c Utils/skip_whitespaces.c Utils/ft_split_modified.c\
-				Parser/parser.c Parser/create_list.c
+LIBS = -lreadline -ltermcap -Llibft -lft -L $(USER)/Cellar/readline/8.1/lib
 
-all : $(NAME)
+FLAGS = -Wall -Wextra -Werror
 
-$(NAME) : $(SRCS)
-		@make bonus -C $(LIBFT_PATH)
-		@$(CC) -g -o $(NAME) $(CFLAGS) $(SRCS) -I $(INCLUDES) -I $(LIBFT_PATH) $(LIBFT) -lreadline
+all: $(NAME)
 
-clean :
-		@make -C $(LIBFT_PATH) clean
-		@rm -rf Utils/*.o
+$(NAME): $(OBJS) $(HEADER)
+		make -C ./libft
+		gcc $(FLAGS) -g $(OBJS) -o $(NAME) $(INC) $(LIBS) 
 
-fclean : clean
-		@make -C $(LIBFT_PATH) fclean
-		@rm -rf $(NAME)
+%.o: %.c
+		gcc $(FLAGS) -g $(INC) -c $< -o $@
 
-re : fclean all
+clean:
+		make -C ./libft clean
+		rm -rf $(OBJS)
+
+fclean: clean
+		make -C ./libft fclean
+		rm -rf $(NAME)
+
+re: fclean all
 
 .PHONY: all clean fclean re
